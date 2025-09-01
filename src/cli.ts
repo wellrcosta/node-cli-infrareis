@@ -3,7 +3,7 @@ import { Command } from "commander";
 import path from "path";
 import chalk from "chalk";
 import { generate } from "./generator";
-import { Answers, DbOption, EnvProfile, Feature, Preset } from "./types";
+import { Answers } from "./types";
 
 export function buildProgram() {
   const program = new Command()
@@ -21,53 +21,78 @@ export function buildProgram() {
         {
           type: "input",
           name: "projectName",
-          message: "Nome do projeto (kebab-case):",
-          validate: (s: string) =>
-            /^[a-z0-9-]+$/.test(s) ? true : "use minúsculas, números e hífens",
+          message: "Nome do projeto:",
+          validate: (s) =>
+            (!!s && /^[a-z0-9-]+$/.test(s)) ||
+            "Use minúsculas, números e hífens",
         },
         {
           type: "list",
           name: "preset",
           message: "Preset:",
           choices: [
-            {
-              name: "Minimal (HTTP + health)",
-              value: "minimal" satisfies Preset,
-            },
-            { name: "CRUD (Users)", value: "crud" satisfies Preset },
+            { name: "Minimal", value: "minimal" },
+            { name: "CRUD", value: "crud" },
           ],
-          default: "minimal",
-        },
-        {
-          type: "checkbox",
-          name: "features",
-          message: "Features:",
-          choices: [{ name: "RabbitMQ", value: "rabbitmq" satisfies Feature }],
-          default: [],
         },
         {
           type: "list",
           name: "db",
           message: "Banco de dados:",
+          when: (a) => a.preset === "crud",
           choices: [
-            { name: "Nenhum (em memória)", value: "none" as DbOption },
-            { name: "SQLite", value: "sqlite" as DbOption },
-            { name: "Postgres", value: "postgres" as DbOption },
-            { name: "MongoDB", value: "mongo" as DbOption },
+            { name: "SQLite (Prisma)", value: "sqlite" },
+            { name: "Mongo (Mongoose)", value: "mongo" },
+            { name: "Postgres (pg)", value: "postgres" },
           ],
-          default: "none",
+        },
+        {
+          type: "checkbox",
+          name: "features",
+          message: "Features opcionais:",
+          choices: [
+            { name: "RabbitMQ", value: "rabbitmq" },
+            { name: "Swagger (OpenAPI por JSDoc)", value: "swagger" },
+            { name: "Auth JWT", value: "auth-jwt" },
+            { name: "Loki (logs para Grafana)", value: "loki-logger" },
+            { name: "Redis (cache)", value: "redis" },
+          ],
+          default: [], // nada marcado por padrão
+          loop: false,
+          pageSize: 10,
         },
         {
           type: "list",
           name: "envProfile",
-          message: "Perfil do .env:",
+          message: "Perfil de .env:",
           choices: [
-            { name: "Básico", value: "basic" as EnvProfile },
-            { name: "Completo (arquitetura)", value: "full" as EnvProfile },
+            { name: "Básico", value: "basic" },
+            { name: "Completo (infra)", value: "full" },
           ],
-          default: "basic",
+        },
+        {
+          type: "list",
+          name: "packageManager",
+          message: "Gerenciador de pacotes:",
+          choices: ["npm", "yarn", "pnpm"],
+          default: "npm",
         },
       ]);
+
+      if (answers.preset === "minimal") {
+        answers.db = "none";
+      }
+
+      console.log("\nResumo do projeto:");
+      console.log(`- Preset: ${answers.preset}`);
+      console.log(`- DB: ${answers.db}`);
+      console.log(
+        `- Features: ${
+          answers.features.length ? answers.features.join(", ") : "nenhuma"
+        }`
+      );
+      console.log(`- .env: ${answers.envProfile}`);
+      console.log();
 
       const projectPath = path.join(process.cwd(), answers.projectName);
       await generate(projectPath, answers);

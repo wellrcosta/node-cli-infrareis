@@ -9,13 +9,31 @@ export function selectPacks(cfg: Answers) {
     path.join(root, "base"),
     path.join(root, "presets", cfg.preset),
   ];
-  for (const feat of cfg.features || []) {
-    packs.push(path.join(root, "features", feat));
-  }
+
+  // DB overlay (se não for minimal)
   if (cfg.db && cfg.db !== "none") {
     packs.push(path.join(root, "db", cfg.db));
   }
+
+  // Features opcionais
+  for (const feat of cfg.features || []) {
+    packs.push(path.join(root, "features", feat));
+    // overlays por preset (ex.: swagger tem overlays distintos p/ minimal e crud)
+    const presetOverlay = path.join(
+      root,
+      "features",
+      feat,
+      "presets",
+      cfg.preset
+    );
+    if (fs.existsSync(presetOverlay)) {
+      packs.push(presetOverlay);
+    }
+  }
+
+  // .env profile
   packs.push(path.join(root, "env", cfg.envProfile));
+
   return packs;
 }
 

@@ -4,7 +4,7 @@ import cors from "cors";
 import { errorHandler } from "../middlewares/error-handler";
 import { router as rootRouter } from "../routes";
 import { router as users } from "../routes/users.routes";
-import { applySwagger } from "../../docs/swagger";
+import { applySwagger } from "../docs/swagger";
 
 export const app = express();
 

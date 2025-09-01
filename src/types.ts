@@ -1,12 +1,19 @@
 export type Preset = "minimal" | "crud";
-export type Feature = "rabbitmq";
-export type DbOption = "none" | "sqlite" | "postgres" | "mongo";
-export type EnvProfile = "basic" | "full";
+
+export type Db = "none" | "sqlite" | "mongo" | "postgres";
+
+export type Feature =
+  | "rabbitmq"
+  | "swagger"
+  | "auth-jwt"
+  | "loki-logger"
+  | "redis";
 
 export interface Answers {
   projectName: string;
   preset: Preset;
+  db: Db;
+  envProfile: "basic" | "full";
   features: Feature[];
-  db: DbOption;
-  envProfile: EnvProfile;
+  packageManager?: "npm" | "yarn" | "pnpm";
 }

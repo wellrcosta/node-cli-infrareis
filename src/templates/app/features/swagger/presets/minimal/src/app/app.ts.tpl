@@ -3,7 +3,7 @@ import helmet from "helmet";
 import cors from "cors";
 import { router as apiRouter } from "../routes";
 import { errorHandler } from "../middlewares/error-handler";
-import { applySwagger } from "../../docs/swagger";
+import { applySwagger } from "../docs/swagger";
 
 export const app = express();
 
