@@ -1,0 +1,28 @@
+{
+  "name": "reis-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "create-app": "./dist/bin.js"
+  },
+  "scripts": {
+    "dev": "tsx src/bin.ts create",
+    "build": "tsc",
+    "start": "node dist/bin.js create"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^9.3.6",
+    "ora": "^8.0.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.9",
+    "@types/node": "^22.5.4",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.4"
+  }
+}
