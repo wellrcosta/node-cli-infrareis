@@ -36,7 +36,7 @@ A fast, opinionated project scaffolder for Node.js + TypeScript APIs. It creates
 ## 🚀 Quick Start
 
 ```bash
-npx boilerplate-generator create
+npx reis-cli create
 # or run via npm script if installed locally
 ```
 
