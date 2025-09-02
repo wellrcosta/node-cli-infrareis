@@ -2,8 +2,9 @@ import inquirer from "inquirer";
 import { Command } from "commander";
 import path from "path";
 import chalk from "chalk";
-import { generate } from "./generator";
-import { Answers } from "./types";
+
+import { generate } from "./generator/index.js";
+import type { Answers } from "./types.js";
 
 export function buildProgram() {
   const program = new Command()
@@ -57,7 +58,7 @@ export function buildProgram() {
             { name: "Loki (logs para Grafana)", value: "loki-logger" },
             { name: "Redis (cache)", value: "redis" },
           ],
-          default: [], // nada marcado por padrão
+          default: [],
           loop: false,
           pageSize: 10,
         },

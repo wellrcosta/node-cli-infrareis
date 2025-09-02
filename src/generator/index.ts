@@ -1,9 +1,10 @@
 import ora from "ora";
 import fs from "fs-extra";
 import path from "path";
-import { Answers } from "../types";
-import { writeFromTemplates } from "./steps/write-from-templates";
-import { patchPackageJson } from "./steps/patch-package-json";
+
+import type { Answers } from "../types.js";
+import { writeFromTemplates } from "./steps/write-from-templates.js";
+import { patchPackageJson } from "./steps/patch-package-json.js";
 
 export async function generate(projectPath: string, cfg: Answers) {
   const spin = ora("Gerando projeto...").start();

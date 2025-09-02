@@ -1,24 +1,22 @@
 import path from "path";
 import fs from "fs-extra";
-import { copyTemplateDir, resolveFromSrc } from "../../utils/template";
-import { Answers } from "../../types";
+import { copyTemplateDir, resolveTemplatePath } from "../../utils/template.js";
+import type { Answers } from "../../types.js";
 
 export function selectPacks(cfg: Answers) {
-  const root = resolveFromSrc("templates/app");
+  const root = resolveTemplatePath("app");
+
   const packs: string[] = [
     path.join(root, "base"),
     path.join(root, "presets", cfg.preset),
   ];
 
-  // DB overlay (se não for minimal)
   if (cfg.db && cfg.db !== "none") {
     packs.push(path.join(root, "db", cfg.db));
   }
 
-  // Features opcionais
   for (const feat of cfg.features || []) {
     packs.push(path.join(root, "features", feat));
-    // overlays por preset (ex.: swagger tem overlays distintos p/ minimal e crud)
     const presetOverlay = path.join(
       root,
       "features",
@@ -31,7 +29,6 @@ export function selectPacks(cfg: Answers) {
     }
   }
 
-  // .env profile
   packs.push(path.join(root, "env", cfg.envProfile));
 
   return packs;
@@ -42,8 +39,19 @@ export async function writeFromTemplates(projectPath: string, cfg: Answers) {
   const vars = { projectName: cfg.projectName };
 
   await fs.ensureDir(projectPath);
+
   for (const p of packs) {
-    await copyTemplateDir(p, projectPath, vars);
+    const isFeatureRoot = /[/\\]features[/\\][^/\\]+$/.test(p);
+
+    const opts = isFeatureRoot
+      ? {
+          exclude: (rel: string) =>
+            rel === "presets" || rel.startsWith("presets/"),
+        }
+      : undefined;
+
+    await copyTemplateDir(p, projectPath, vars, opts as any);
   }
+
   return packs;
 }
